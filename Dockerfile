@@ -11,17 +11,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
         nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /src
-COPY ["src/Shield/Shield.csproj", "src/Shield/"]
-RUN dotnet restore "src/Shield/Shield.csproj"
-COPY . .
-WORKDIR "/src/src/Shield"
-RUN dotnet build "Shield.csproj" -c Release -o /app/build
+# Copy src folder contents to the build path
+COPY ./src /app
 
-FROM build AS publish
-RUN dotnet publish "Shield.csproj" -c Release -o /app/publish /p:UseAppHost=false
+WORKDIR /app/Shield
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Shield.dll"]
