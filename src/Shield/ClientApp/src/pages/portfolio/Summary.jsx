@@ -120,7 +120,6 @@ export default function PortfolioSummary() {
     const handleChangeRowsPerPage = (event) => {
         setState({
             ...state,
-            pageSize: 0,
             pageSize: event.target.value,
         })
     }
